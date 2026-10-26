@@ -1,0 +1,16 @@
+
+Files:             bag_0.db3
+Bag size:          1.1 GiB
+Storage id:        sqlite3
+Duration:          59.870773941s
+Start:             Oct 15 2026 10:35:11.854788028 (1792031711.854788028)
+End:               Oct 15 2026 10:36:11.725561969 (1792031771.725561969)
+Messages:          50511
+Topic information: Topic: /odin1/cloud_raw | Type: sensor_msgs/msg/PointCloud2 | Count: 613 | Serialization Format: cdr
+                   Topic: /odin1/cloud_slam | Type: sensor_msgs/msg/PointCloud2 | Count: 614 | Serialization Format: cdr
+                   Topic: /odin1/image/compressed | Type: sensor_msgs/msg/CompressedImage | Count: 614 | Serialization Format: cdr
+                   Topic: /odin1/odometry | Type: nav_msgs/msg/Odometry | Count: 614 | Serialization Format: cdr
+                   Topic: /odin1/imu | Type: sensor_msgs/msg/Imu | Count: 23720 | Serialization Format: cdr
+                   Topic: /odin1/odometry_highfreq | Type: nav_msgs/msg/Odometry | Count: 23722 | Serialization Format: cdr
+                   Topic: /tf | Type: tf2_msgs/msg/TFMessage | Count: 614 | Serialization Format: cdr
+

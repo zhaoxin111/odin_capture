@@ -1,0 +1,200 @@
+{
+  "status": "passed",
+  "device_serial": "N080100083",
+  "soc_firmware": "0.12.0",
+  "driver_tag": "0.12.0",
+  "driver_commit": "388440c977af579ea81c3c242ab36fb958d3be82",
+  "os": "WSL2 Ubuntu 22.04 x86_64",
+  "ros_distribution": "humble",
+  "usb_link_mbps": 5000,
+  "bag_bytes": 1192738816,
+  "bag_original": "/root/odin_bags/20261015_103511/bag",
+  "bag_windows": "D:\\workspace\\odin_bags\\20261015_103511\\bag",
+  "validation": {
+    "passed": true,
+    "missing": [],
+    "empty_payloads": {},
+    "backwards_header_stamps": {},
+    "topics": {
+      "/odin1/odometry_highfreq": {
+        "messages": 23722,
+        "duration_seconds": 59.870694507,
+        "received_hz": 396.20385558124053,
+        "sample": {
+          "frame_id": "odom",
+          "header_stamp_ns": 5513633129533,
+          "payload_bytes": 724
+        }
+      },
+      "/odin1/imu": {
+        "messages": 23720,
+        "duration_seconds": 59.870716423,
+        "received_hz": 396.17030523603495,
+        "sample": {
+          "frame_id": "imu_link",
+          "header_stamp_ns": 5513639881219,
+          "payload_bytes": 324
+        }
+      },
+      "/tf": {
+        "messages": 614,
+        "duration_seconds": 59.74969653,
+        "received_hz": 10.259466333728005,
+        "sample": {
+          "frame_id": null,
+          "header_stamp_ns": null,
+          "payload_bytes": 108,
+          "transforms": [
+            [
+              "odom",
+              "odin1_base_link"
+            ]
+          ]
+        }
+      },
+      "/odin1/odometry": {
+        "messages": 614,
+        "duration_seconds": 59.749664587,
+        "received_hz": 10.259471818581106,
+        "sample": {
+          "frame_id": "odom",
+          "header_stamp_ns": 5513462862776,
+          "payload_bytes": 724
+        }
+      },
+      "/odin1/cloud_slam": {
+        "messages": 614,
+        "duration_seconds": 59.752292466,
+        "received_hz": 10.259020611615975,
+        "sample": {
+          "frame_id": "odom",
+          "header_stamp_ns": 5513462862776,
+          "payload_bytes": 497509,
+          "fields": [
+            "x",
+            "y",
+            "z",
+            "rgb"
+          ],
+          "points": 31086
+        }
+      },
+      "/odin1/image/compressed": {
+        "messages": 614,
+        "duration_seconds": 59.787620342,
+        "received_hz": 10.252958664243335,
+        "sample": {
+          "frame_id": "",
+          "header_stamp_ns": 5513657802046,
+          "payload_bytes": 461698,
+          "format": "jpeg"
+        }
+      },
+      "/odin1/cloud_raw": {
+        "messages": 613,
+        "duration_seconds": 59.651415072,
+        "received_hz": 10.259605732090487,
+        "sample": {
+          "frame_id": "odin1_base_link",
+          "header_stamp_ns": 5513561403795,
+          "payload_bytes": 934093,
+          "fields": [
+            "x",
+            "y",
+            "z",
+            "intensity",
+            "confidence",
+            "offset_time"
+          ],
+          "points": 49152
+        }
+      }
+    }
+  },
+  "replay": {
+    "passed": true,
+    "player_exit_code": 0,
+    "received_messages": {
+      "/odin1/imu": 23720,
+      "/odin1/odometry_highfreq": 23722,
+      "/odin1/odometry": 614,
+      "/tf": 614,
+      "/odin1/cloud_slam": 614,
+      "/odin1/image/compressed": 614,
+      "/odin1/cloud_raw": 613
+    },
+    "count_differences": {}
+  },
+  "payload": {
+    "/odin1/imu": {
+      "angular_velocity_and_acceleration": [
+        0.0,
+        -0.008513799868524075,
+        -0.0021284499671310186,
+        7.92026948928833,
+        5.694186687469482,
+        -0.1433100700378418
+      ]
+    },
+    "/odin1/image/compressed": {
+      "decoded_width": 1600,
+      "decoded_height": 1296,
+      "format": "jpeg"
+    },
+    "/odin1/cloud_raw": {
+      "points": 49152,
+      "fields": [
+        "x",
+        "y",
+        "z",
+        "intensity",
+        "confidence",
+        "offset_time"
+      ],
+      "point_step": 19
+    }
+  },
+  "timing": {
+    "/odin1/odometry_highfreq": {
+      "median_interval_ms": 2.522334,
+      "max_interval_ms": 2.768666,
+      "gaps_over_twice_median": 0,
+      "header_span_seconds": 59.838967346
+    },
+    "/odin1/imu": {
+      "median_interval_ms": 2.522334,
+      "max_interval_ms": 2.768666,
+      "gaps_over_twice_median": 0,
+      "header_span_seconds": 59.833923846
+    },
+    "/odin1/odometry": {
+      "median_interval_ms": 97.473552,
+      "max_interval_ms": 97.630177,
+      "gaps_over_twice_median": 0,
+      "header_span_seconds": 59.751295087
+    },
+    "/odin1/cloud_slam": {
+      "median_interval_ms": 97.473552,
+      "max_interval_ms": 97.630177,
+      "gaps_over_twice_median": 0,
+      "header_span_seconds": 59.751295087
+    },
+    "/odin1/image/compressed": {
+      "median_interval_ms": 97.473552,
+      "max_interval_ms": 97.630177,
+      "gaps_over_twice_median": 0,
+      "header_span_seconds": 59.751302129
+    },
+    "/odin1/cloud_raw": {
+      "median_interval_ms": 97.4735515,
+      "max_interval_ms": 97.630177,
+      "gaps_over_twice_median": 0,
+      "header_span_seconds": 59.653791285
+    }
+  },
+  "windows_copy_sha256_verified": true,
+  "restart_probe": "Live topic counts: {'/odin1/odometry_highfreq': 2102, '/odin1/imu': 1921, '/odin1/odometry': 55, '/odin1/cloud_raw': 55, '/odin1/cloud_slam': 55, '/odin1/image/compressed': 55, '/tf': 52}",
+  "graceful_shutdown_verified": true,
+  "live_driver_running": false,
+  "recording_running": false
+}

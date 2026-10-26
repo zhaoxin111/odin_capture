@@ -1,0 +1,57 @@
+{
+  "passed": true,
+  "messages_received": {
+    "image": 111,
+    "jpeg": 112
+  },
+  "matching_decoded_frames": 3,
+  "original_header_preserved": true,
+  "width": 1600,
+  "height": 1296,
+  "encoding": "bgr8",
+  "new_image_bag_validated": true,
+  "test_source": "existing JPEG-only bag; hardware disconnected",
+  "native_image_replay": {
+    "passed": true,
+    "player_exit_code": 0,
+    "received_messages": {
+      "/odin1/image/compressed": 74,
+      "/odin1/image": 73
+    },
+    "count_differences": {}
+  },
+  "recorded_image_topics": {
+    "passed": true,
+    "missing": [],
+    "empty_payloads": {},
+    "backwards_header_stamps": {},
+    "topics": {
+      "/odin1/image/compressed": {
+        "messages": 74,
+        "duration_seconds": 7.153807137,
+        "received_hz": 10.204356729501248,
+        "sample": {
+          "frame_id": "",
+          "header_stamp_ns": 5517361794918,
+          "payload_bytes": 467766,
+          "format": "jpeg"
+        }
+      },
+      "/odin1/image": {
+        "messages": 73,
+        "duration_seconds": 7.038875453,
+        "received_hz": 10.228906659985478,
+        "sample": {
+          "frame_id": "",
+          "header_stamp_ns": 5517361794918,
+          "payload_bytes": 6220848,
+          "width": 1600,
+          "height": 1296,
+          "encoding": "bgr8",
+          "step": 4800
+        }
+      }
+    }
+  },
+  "rviz_config_load_verified": true
+}
