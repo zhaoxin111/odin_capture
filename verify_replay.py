@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Verify an actual ROS replay with the live hardware driver stopped."""
 import collections
+import argparse
 import json
 from pathlib import Path
 import subprocess
-import sys
 import time
 
 import rclpy
@@ -15,8 +15,16 @@ from capture import topics_for_session, required_for_session
 
 
 def main():
-    session = Path(sys.argv[1]).resolve()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('session', type=Path)
+    parser.add_argument('--output-dir', type=Path,
+                        help='Write logs/report here instead of the recording directory')
+    args = parser.parse_args()
+    session = args.session.resolve()
     bag = session / 'bag' if (session / 'bag').exists() else session
+    session = bag.parent
+    output = args.output_dir.resolve() if args.output_dir else session
+    output.mkdir(parents=True, exist_ok=True)
     required = required_for_session(bag.parent)
     rclpy.init()
     node = rclpy.create_node('odin_replay_verification')
@@ -36,7 +44,7 @@ def main():
         node.destroy_node()
         rclpy.shutdown()
         raise RuntimeError('Stop the live driver before testing replay.')
-    with (session / 'replay.log').open('w') as log:
+    with (output / 'replay.log').open('w') as log:
         player = subprocess.Popen(['ros2', 'bag', 'play', str(bag), '--clock',
                                    '--rate', '4', '--start-paused',
                                    '--disable-keyboard-controls',
@@ -80,7 +88,7 @@ def main():
     report = {'passed': player.returncode == 0 and not differences,
               'player_exit_code': player.returncode, 'received_messages': dict(counts),
               'count_differences': differences}
-    (session / 'replay_validation.json').write_text(json.dumps(report, indent=2))
+    (output / 'replay_validation.json').write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
     return 0 if report['passed'] else 1
 

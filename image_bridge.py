@@ -2,6 +2,7 @@
 """Decode older JPEG-only bags for RViz and standard Image subscribers."""
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import ExternalShutdownException
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import CompressedImage, Image
 from cv_bridge import CvBridge
@@ -39,7 +40,7 @@ def main():
     node = ImageBridge()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
         node.destroy_node()

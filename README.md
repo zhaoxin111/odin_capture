@@ -146,6 +146,32 @@ python3 "$ODIN_TOOLS/complete_camera_bag.py" \
 
 ## 图像回放和算法使用
 
+### 本机 Linux / ROS Jazzy 回放
+
+`env.sh` 支持 Humble 和 Jazzy：优先使用 `ODIN_ROS_DISTRO` 或当前 `ROS_DISTRO`，否则依次查找 Humble、Jazzy。离线回放无需安装厂家驱动工作空间。图像解码使用系统 `/usr/bin/python3`，避免 Conda Python 与 ROS 二进制不兼容；可用 `ODIN_PYTHON` 覆盖。
+
+在 `/workspace/odin_capture` 下，终端 A 打开视图，终端 B 播放本次采集：
+
+```bash
+# 终端 A
+bash view.sh
+# 终端 B
+bash replay.sh /media/xzhao/nas163/data_xzhao/odin1/odin_bags/20261029_111405 --start-paused
+```
+
+等待连接后按空格开始。也可传入采集目录下的 `bag/`。本次 bag 约 40.16 秒，8 个话题共 19,690 条消息，包含相机静态 TF；JPEG 可解码为 1600×1296。
+
+严格验证可将报告写到本地，避免向 NAS 原始采集目录写入：
+
+```bash
+source ./env.sh
+"$ODIN_PYTHON" verify_replay.py \
+  /media/xzhao/nas163/data_xzhao/odin1/odin_bags/20261029_111405 \
+  --output-dir ./replay_check_20261029_111405
+```
+
+以下为原 WSL 环境的操作路径。
+
 先停止实时驱动。Ubuntu 终端 A 一键打开图像和点云视图：
 
 ```bash

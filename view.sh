@@ -3,7 +3,7 @@ set -eo pipefail
 source "$(dirname "$0")/env.sh"
 bridge_pid=''
 if ! ros2 node list 2>/dev/null | grep -Fxq '/odin_jpeg_decoder'; then
-  python3 "$ODIN_TOOLS/image_bridge.py" &
+  "$ODIN_PYTHON" "$ODIN_TOOLS/image_bridge.py" &
   bridge_pid=$!
 fi
 rviz2 -d "$ODIN_TOOLS/playback.rviz" --ros-args -p use_sim_time:=true &

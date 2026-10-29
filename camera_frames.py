@@ -2,7 +2,6 @@
 from pathlib import Path
 
 import numpy as np
-from scipy.spatial.transform import Rotation
 import yaml
 
 from calibration import validate_calibration
@@ -14,6 +13,8 @@ IMAGE_TOPICS = ('/odin1/image/compressed', '/odin1/image', '/odin1/image/undisto
 
 
 def camera_geometry(calib):
+    from scipy.spatial.transform import Rotation
+
     validate_calibration(calib)
     data = yaml.safe_load(Path(calib).read_text())
     # Despite reversed prose comments in parts of the vendor driver, its

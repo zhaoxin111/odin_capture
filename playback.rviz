@@ -5,6 +5,9 @@ Panels:
     Name: Views
 Visualization Manager:
   Class: ''
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Interact
   Global Options:
     Background Color: 40; 40; 40
     Fixed Frame: odom
