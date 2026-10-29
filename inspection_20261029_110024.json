@@ -1,0 +1,598 @@
+{
+  "errors": [],
+  "topics": {
+    "/tf_static": {
+      "messages": 1,
+      "frames": []
+    },
+    "/odin1/image/compressed": {
+      "messages": 540,
+      "frames": [
+        "odin1_camera_optical_frame"
+      ],
+      "sensor_time_range_seconds": [
+        44.994625325,
+        141.396078678
+      ],
+      "received_time_range_seconds": [
+        1793242828.1336176,
+        1793242925.227874
+      ],
+      "sensor_interval_ms": {
+        "min": 97.409218,
+        "median": 194.932769,
+        "max": 877.304796
+      },
+      "sensor_hz": 5.5912020125496005,
+      "largest_gaps": [
+        {
+          "start_sensor_s": 118.684596313,
+          "end_sensor_s": 119.561901109,
+          "gap_ms": 877.304796
+        },
+        {
+          "start_sensor_s": 116.442816671,
+          "end_sensor_s": 117.320053967,
+          "gap_ms": 877.237296
+        },
+        {
+          "start_sensor_s": 63.904628683,
+          "end_sensor_s": 64.68436422,
+          "gap_ms": 779.735537
+        },
+        {
+          "start_sensor_s": 70.240282403,
+          "end_sensor_s": 70.825199045,
+          "gap_ms": 584.916642
+        },
+        {
+          "start_sensor_s": 86.713364892,
+          "end_sensor_s": 87.298185784,
+          "gap_ms": 584.820892
+        }
+      ],
+      "gaps_over_2x_healthy_interval": 157,
+      "max_delivery_offset_change_s": 1.801262259,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 21
+    },
+    "/odin1/imu": {
+      "messages": 32213,
+      "frames": [
+        "imu_link"
+      ],
+      "sensor_time_range_seconds": [
+        47.580456969,
+        139.235506553
+      ],
+      "received_time_range_seconds": [
+        1793242829.2656322,
+        1793242925.3727968
+      ],
+      "sensor_interval_ms": {
+        "min": 2.225126,
+        "median": 2.522625,
+        "max": 55.501256
+      },
+      "sensor_hz": 351.44817602742495,
+      "largest_gaps": [
+        {
+          "start_sensor_s": 92.14865028,
+          "end_sensor_s": 92.204151536,
+          "gap_ms": 55.501256
+        },
+        {
+          "start_sensor_s": 88.801023527,
+          "end_sensor_s": 88.854045032,
+          "gap_ms": 53.021505
+        },
+        {
+          "start_sensor_s": 107.648221212,
+          "end_sensor_s": 107.698716592,
+          "gap_ms": 50.49538
+        },
+        {
+          "start_sensor_s": 118.985383935,
+          "end_sensor_s": 119.035837315,
+          "gap_ms": 50.45338
+        },
+        {
+          "start_sensor_s": 117.47678345,
+          "end_sensor_s": 117.522195371,
+          "gap_ms": 45.411921
+        }
+      ],
+      "gaps_over_2x_healthy_interval": 1015,
+      "max_delivery_offset_change_s": 8.951106365,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 1061
+    },
+    "/odin1/odometry_highfreq": {
+      "messages": 996,
+      "frames": [
+        "odom"
+      ],
+      "sensor_time_range_seconds": [
+        43.804880237,
+        139.233798367
+      ],
+      "received_time_range_seconds": [
+        1793242829.283174,
+        1793242924.0696952
+      ],
+      "sensor_interval_ms": {
+        "min": 2.436583,
+        "median": 80.726925,
+        "max": 734.101032
+      },
+      "sensor_hz": 10.426608825686788,
+      "largest_gaps": [
+        {
+          "start_sensor_s": 137.099611819,
+          "end_sensor_s": 137.833712851,
+          "gap_ms": 734.101032
+        },
+        {
+          "start_sensor_s": 116.748527774,
+          "end_sensor_s": 117.444811053,
+          "gap_ms": 696.283279
+        },
+        {
+          "start_sensor_s": 80.671187108,
+          "end_sensor_s": 81.359930052,
+          "gap_ms": 688.742944
+        },
+        {
+          "start_sensor_s": 92.242852604,
+          "end_sensor_s": 92.742304654,
+          "gap_ms": 499.45205
+        },
+        {
+          "start_sensor_s": 65.974031089,
+          "end_sensor_s": 66.438204928,
+          "gap_ms": 464.173839
+        }
+      ],
+      "gaps_over_2x_healthy_interval": 554,
+      "max_delivery_offset_change_s": 5.728505961,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 252,
+      "position_min_max": [
+        [
+          -4.140783,
+          -3.0691,
+          -0.000688
+        ],
+        [
+          1.70102,
+          49.660194,
+          0.812714
+        ]
+      ],
+      "quaternion_norm_min_max": [
+        0.9999985983725177,
+        0.9999999448964985
+      ]
+    },
+    "/odin1/cloud_slam": {
+      "messages": 545,
+      "frames": [
+        "odom"
+      ],
+      "sensor_time_range_seconds": [
+        46.456602805,
+        138.959258058
+      ],
+      "received_time_range_seconds": [
+        1793242829.2837372,
+        1793242923.9267824
+      ],
+      "sensor_interval_ms": {
+        "min": 97.405968,
+        "median": 97.53588500000001,
+        "max": 779.840912
+      },
+      "sensor_hz": 5.880912266919573,
+      "largest_gaps": [
+        {
+          "start_sensor_s": 87.785556291,
+          "end_sensor_s": 88.565397203,
+          "gap_ms": 779.840912
+        },
+        {
+          "start_sensor_s": 114.006000301,
+          "end_sensor_s": 114.785769463,
+          "gap_ms": 779.769162
+        },
+        {
+          "start_sensor_s": 116.930126053,
+          "end_sensor_s": 117.612440247,
+          "gap_ms": 682.314194
+        },
+        {
+          "start_sensor_s": 92.756655582,
+          "end_sensor_s": 93.341524933,
+          "gap_ms": 584.869351
+        },
+        {
+          "start_sensor_s": 83.301758091,
+          "end_sensor_s": 83.886621316,
+          "gap_ms": 584.863225
+        }
+      ],
+      "gaps_over_2x_healthy_interval": 154,
+      "max_delivery_offset_change_s": 4.155086467,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 91,
+      "points_min_max": [
+        13671,
+        27408
+      ],
+      "finite_xyz_ratio_min": 1.0
+    },
+    "/tf": {
+      "messages": 555,
+      "frames": [],
+      "sensor_time_range_seconds": [
+        45.482002416,
+        138.959258058
+      ],
+      "received_time_range_seconds": [
+        1793242829.283825,
+        1793242924.0187805
+      ],
+      "sensor_interval_ms": {
+        "min": 97.408218,
+        "median": 97.5334685,
+        "max": 584.871475
+      },
+      "sensor_hz": 5.926575359911228,
+      "largest_gaps": [
+        {
+          "start_sensor_s": 110.984267081,
+          "end_sensor_s": 111.569138556,
+          "gap_ms": 584.871475
+        },
+        {
+          "start_sensor_s": 82.326978993,
+          "end_sensor_s": 82.911831635,
+          "gap_ms": 584.852642
+        },
+        {
+          "start_sensor_s": 114.590821818,
+          "end_sensor_s": 115.175653252,
+          "gap_ms": 584.831434
+        },
+        {
+          "start_sensor_s": 122.681131589,
+          "end_sensor_s": 123.265952023,
+          "gap_ms": 584.820434
+        },
+        {
+          "start_sensor_s": 118.879543874,
+          "end_sensor_s": 119.366943548,
+          "gap_ms": 487.399674
+        }
+      ],
+      "gaps_over_2x_healthy_interval": 156,
+      "max_delivery_offset_change_s": 6.806025821,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 88
+    },
+    "/odin1/odometry": {
+      "messages": 554,
+      "frames": [
+        "odom"
+      ],
+      "sensor_time_range_seconds": [
+        45.482002416,
+        138.959258058
+      ],
+      "received_time_range_seconds": [
+        1793242829.2838943,
+        1793242924.0187511
+      ],
+      "sensor_interval_ms": {
+        "min": 97.408218,
+        "median": 97.533927,
+        "max": 682.336318
+      },
+      "sensor_hz": 5.9158775704529045,
+      "largest_gaps": [
+        {
+          "start_sensor_s": 82.326978993,
+          "end_sensor_s": 83.009315311,
+          "gap_ms": 682.336318
+        },
+        {
+          "start_sensor_s": 110.984267081,
+          "end_sensor_s": 111.569138556,
+          "gap_ms": 584.871475
+        },
+        {
+          "start_sensor_s": 114.590821818,
+          "end_sensor_s": 115.175653252,
+          "gap_ms": 584.831434
+        },
+        {
+          "start_sensor_s": 122.681131589,
+          "end_sensor_s": 123.265952023,
+          "gap_ms": 584.820434
+        },
+        {
+          "start_sensor_s": 118.879543874,
+          "end_sensor_s": 119.366943548,
+          "gap_ms": 487.399674
+        }
+      ],
+      "gaps_over_2x_healthy_interval": 156,
+      "max_delivery_offset_change_s": 3.452584196,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 88,
+      "position_min_max": [
+        [
+          -4.142229,
+          -3.067354,
+          0.154803
+        ],
+        [
+          1.701423,
+          49.40171,
+          0.814064
+        ]
+      ],
+      "quaternion_norm_min_max": [
+        0.999998615060041,
+        0.9999999529889988
+      ]
+    },
+    "/odin1/cloud_raw": {
+      "messages": 545,
+      "frames": [
+        "odin1_base_link"
+      ],
+      "sensor_time_range_seconds": [
+        46.553815866,
+        141.298220968
+      ],
+      "received_time_range_seconds": [
+        1793242829.3040328,
+        1793242923.9263818
+      ],
+      "sensor_interval_ms": {
+        "min": 97.408218,
+        "median": 194.94516549999997,
+        "max": 877.288463
+      },
+      "sensor_hz": 5.741763847842416,
+      "largest_gaps": [
+        {
+          "start_sensor_s": 85.640738043,
+          "end_sensor_s": 86.518026506,
+          "gap_ms": 877.288463
+        },
+        {
+          "start_sensor_s": 89.24726678,
+          "end_sensor_s": 89.832105089,
+          "gap_ms": 584.838309
+        },
+        {
+          "start_sensor_s": 71.019733032,
+          "end_sensor_s": 71.604536132,
+          "gap_ms": 584.8031
+        },
+        {
+          "start_sensor_s": 116.734824542,
+          "end_sensor_s": 117.222193883,
+          "gap_ms": 487.369341
+        },
+        {
+          "start_sensor_s": 91.781575368,
+          "end_sensor_s": 92.2689445,
+          "gap_ms": 487.369132
+        }
+      ],
+      "gaps_over_2x_healthy_interval": 134,
+      "max_delivery_offset_change_s": 1.165003126,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 10,
+      "points_min_max": [
+        49152,
+        49152
+      ],
+      "finite_xyz_ratio_min": 1.0
+    }
+  },
+  "hash_checks": {
+    "/root/odin_bags/20261029_110024": {
+      "files": 13,
+      "mismatches": []
+    },
+    "/mnt/d/workspace/odin_bags/20261029_110024": {
+      "files": 13,
+      "mismatches": []
+    }
+  },
+  "calibration_valid": true,
+  "timing": {
+    "receive_time_rollbacks": [],
+    "total_adjustment_ns": 0,
+    "segments": [
+      [
+        "bag_0.db3",
+        1,
+        null,
+        0
+      ]
+    ]
+  },
+  "sqlite_integrity": "ok",
+  "camera_static_edges": [
+    [
+      "odin1_base_link",
+      "odin1_camera_optical_frame"
+    ]
+  ],
+  "recording_manifest_matches_current": true,
+  "excluded_topics_absent": true,
+  "message_count": 35949,
+  "duration_seconds": 97.659717552,
+  "decoded_images": {
+    "(1296, 1600, 3)": 540
+  },
+  "tf_edges": [
+    [
+      "odom",
+      "odin1_base_link"
+    ]
+  ],
+  "imu_acceleration_norm_min_max": [
+    6.168898912550668,
+    12.56610140474446
+  ],
+  "nearest_pairs": {
+    "/odin1/image/compressed vs /odin1/cloud_raw": {
+      "messages": 540,
+      "median_nearest_ms": 0.48747050000000003,
+      "max_nearest_ms": 1559.190541,
+      "within_10ms": 291,
+      "within_25ms": 291,
+      "within_50ms": 291
+    },
+    "/odin1/cloud_raw vs /odin1/odometry": {
+      "messages": 545,
+      "median_nearest_ms": 0.439658,
+      "max_nearest_ms": 2338.96291,
+      "within_10ms": 324,
+      "within_25ms": 324,
+      "within_50ms": 324
+    },
+    "/odin1/image/compressed vs /odin1/imu": {
+      "messages": 540,
+      "median_nearest_ms": 0.7640625,
+      "max_nearest_ms": 2585.831644,
+      "within_10ms": 502,
+      "within_25ms": 507,
+      "within_50ms": 507
+    },
+    "/odin1/image/compressed vs /odin1/odometry_highfreq": {
+      "messages": 540,
+      "median_nearest_ms": 43.54014,
+      "max_nearest_ms": 2162.280311,
+      "within_10ms": 53,
+      "within_25ms": 151,
+      "within_50ms": 311
+    }
+  },
+  "sensor_window_counts_10s": {
+    "/odin1/image/compressed": [
+      54,
+      59,
+      42,
+      58,
+      57,
+      57,
+      59,
+      53,
+      56,
+      45
+    ],
+    "/odin1/imu": [
+      2468,
+      3964,
+      3953,
+      3952,
+      2468,
+      3630,
+      2861,
+      2887,
+      3964,
+      2066
+    ],
+    "/odin1/odometry_highfreq": [
+      61,
+      59,
+      53,
+      73,
+      52,
+      62,
+      57,
+      49,
+      58,
+      472
+    ],
+    "/odin1/cloud_slam": [
+      45,
+      62,
+      53,
+      66,
+      57,
+      55,
+      69,
+      44,
+      55,
+      39
+    ],
+    "/tf": [
+      51,
+      60,
+      55,
+      68,
+      55,
+      57,
+      64,
+      44,
+      60,
+      41
+    ],
+    "/odin1/odometry": [
+      51,
+      60,
+      55,
+      67,
+      55,
+      57,
+      64,
+      44,
+      60,
+      41
+    ],
+    "/odin1/cloud_raw": [
+      44,
+      61,
+      47,
+      59,
+      59,
+      58,
+      62,
+      52,
+      58,
+      45
+    ]
+  },
+  "sensor_windows_start_s": 43.804880237,
+  "integrity_checks_passed": true,
+  "data_quality_passed": false,
+  "suitable_for_continuous_slam_or_precision_fusion": false,
+  "quality_findings": [
+    "Driver queue drops began before recording: DTOF 11:00:17, HIGHFREQ_ODOM 11:00:19; recorder started 11:00:27.",
+    "Image/raw-cloud/odometry loss is distributed throughout the recording, not confined to the final USB disconnect.",
+    "Nominal healthy rates from the earlier capture were approximately 10.26 Hz for images/clouds/odometry and 396 Hz for IMU/high-frequency odometry.",
+    "540 JPEG images decode successfully; 291 have a nearest recorded raw-cloud timestamp within 10 ms. This only measures timestamp proximity, not fusion accuracy.",
+    "Use for image/point-cloud inspection and selected-frame experiments; recapture for continuous multi-sensor algorithms."
+  ],
+  "driver_log_counts": {
+    "all_queue_drop_warnings": 41395,
+    "highfreq_odom_drop_warnings": 38497,
+    "usb_no_mem_errors": 5,
+    "soft_detach_events": 1
+  },
+  "last_received_local_time": "2026-10-29T11:02:05.372797+08:00"
+}

@@ -11,7 +11,7 @@ import rclpy
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 from rosidl_runtime_py.utilities import get_message
 from rosbag2_interfaces.srv import Resume
-from capture import TOPICS, required_for_session
+from capture import topics_for_session, required_for_session
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     node = rclpy.create_node('odin_replay_verification')
     counts = collections.Counter()
     subscriptions = []
-    for topic, typename in TOPICS.items():
+    for topic, typename in topics_for_session(bag.parent).items():
         qos = QoSProfile(depth=4000, reliability=ReliabilityPolicy.RELIABLE,
                          durability=DurabilityPolicy.TRANSIENT_LOCAL if topic == '/tf_static'
                          else DurabilityPolicy.VOLATILE)

@@ -22,13 +22,15 @@ powershell -ExecutionPolicy Bypass -File D:\workspace\odin_capture\attach.ps1
 bash /mnt/d/workspace/odin_capture/start.sh
 ```
 
-等待设备连接、固件版本、标定加载及正常出数日志。日志保存在 `/root/odin_ws/logs`。脚本使用 `capture.yaml`，设备时间戳、约 10 Hz 点云/RGB、里程计模式，开启原始点云、IMU、图像、里程计和 SLAM 点云。新录制同时保存 `/odin1/image`（bgr8）和 `/odin1/image/compressed`（JPEG）。其他处理功能由下述开关控制。
+等待设备连接、固件版本、标定加载及正常出数日志。日志保存在 `/root/odin_ws/logs`。脚本使用 `capture.yaml`，设备时间戳、约 10 Hz 点云/RGB、里程计模式，开启原始点云、IMU、图像、里程计和 SLAM 点云。新录制的图像只保存 `/odin1/image/compressed`（JPEG），不保存解码后的 `/odin1/image`。其他处理功能由下述开关控制。
 
 驱动源码已修复 `config_file` 参数未生效的问题，并支持 `ODIN_CALIB_DIR` 指定独立标定目录；配置文件无需每次修改后重新编译。完整修改保存在 `driver.patch`。
 
 ### 深度补全、重投影与图像叠加
 
 `start.sh` 通过 `start_nodes.py` 统一启动主驱动和开启的处理节点。所有节点使用 `capture.yaml`，需要标定的节点使用 `$ODIN_CALIB_DIR/calib.yaml`（默认 `/root/odin_ws/runtime/calib.yaml`），由主驱动从设备获取。处理节点不再固定读取源码目录的配置和标定。
+
+每次启动会将旧标定保留为同目录的 `calib.previous.<时间戳>.yaml`，再由主驱动重新获取当前设备的标定。启动器等待相机参数和 16 项外参完整、文件写入稳定后才启动处理节点，避免空文件或写入中的文件导致整组退出；60 秒仍未获取有效标定时会报告原因并停止驱动。录制归档前也会校验标定内容。此启动脚本更新无需重新编译驱动。
 
 启用全部三项时，在 `capture.yaml` 中设置：
 
@@ -66,7 +68,7 @@ rviz2 -d "$ODIN_TOOLS/playback.rviz" --ros-args -p use_sim_time:=false
 | `sendreprojection` | `cloud_reprojection_ros2_node` | `/odin1/reprojected_image` | Image |
 | `sendoverlay` | `image_overlay_node` | `/odin1/overlay_image` | Image |
 
-`competetion` 是厂家代码中的原始拼写。overlay 默认将重投影图像叠加到去畸变图像上，输入和输出名称由 `overlay_*_topic` 配置指定。`record.sh` 默认同时保存深度补全图和补全点云；录制时需保持 `senddepth: 1` 及其依赖 `senddtof: 1`、`sendrgb: 1`，两路补全输出无数据时录前检查会拒绝开始录制。去畸变图、重投影图和叠加图仍不在默认录制清单中。
+`competetion` 是厂家代码中的原始拼写。overlay 默认将重投影图像叠加到去畸变图像上，输入和输出名称由 `overlay_*_topic` 配置指定。`record.sh` 不保存深度补全图和补全点云，录前检查也不要求这两路输出。实时处理开关仍由 `capture.yaml` 控制；去畸变图、重投影图和叠加图也不在录制清单中。
 
 ## 3. 录制
 
@@ -87,7 +89,17 @@ bash /mnt/d/workspace/odin_capture/record.sh --seconds 0
 
 bag 原件：`/root/odin_bags/日期_时间/bag/`。成功校验后复制整个采集目录至 `D:\workspace\odin_bags\日期_时间\`，并校验 SHA-256。目录还包含标定、配置、版本、驱动修改补丁、运行日志、QoS 和消息统计。
 
-本机首次试录目录为 `20261015_103511`，时长约 59.9 秒，bag 为 1,192,738,816 字节（约 1.11 GiB）。那次只保存 JPEG 图像，约每分钟 1.1 GiB。同时录制 bgr8 图像会额外增加约 60 MiB/s，未包含深度补全输出时约每分钟 4–5 GiB。当前还默认录制深度补全图和补全点云，容量需求会进一步增加，应按实际试录大小规划。
+如果主机接收时间倒退，脚本会先按数据库写入顺序确认传感器时间戳没有倒退，再保留原始目录并生成带 `_repaired` 后缀的副本。副本仅给倒退点及其后的接收时间增加累计偏移，重新建立 bag 索引，然后照常校验和复制。消息内容和传感器 header 时间戳保持原值；`timestamp_repair.json` 保存修正记录。倒退点相邻两条记录的间隔设为 1 ns，因此副本恢复播放顺序，但不能恢复该处精确的主机接收间隔，也不能补回丢帧。原始目录仍应保留。此流程需要额外一份完整 bag 的空间。
+
+对已经录完、因接收时间倒退而校验失败的采集，可生成修正副本（默认直接写入 Windows `odin_bags` 目录）：
+
+```bash
+bash /mnt/d/workspace/odin_capture/record.sh --recover /root/odin_bags/日期_时间
+```
+
+可用 `--recovery-output /目标/采集目录` 指定新目录；目标已存在时会拒绝覆盖。修正在 Linux 临时目录逐个分包完成，再复制到目标，临时目录需容纳最大一个分包并预留 3 GiB。传感器时间戳本身也倒退时会拒绝自动修正。
+
+本机首次试录目录为 `20261015_103511`，时长约 59.9 秒，bag 为 1,192,738,816 字节（约 1.11 GiB）。那次只保存 JPEG 图像，约每分钟 1.1 GiB。当前录制同样只保留 JPEG 图像，不保存 bgr8 图像及深度补全输出；容量应按实际试录大小规划。
 
 录制清单：
 
@@ -95,19 +107,42 @@ bag 原件：`/root/odin_bags/日期_时间/bag/`。成功校验后复制整个�
 | --- | --- |
 | `/odin1/cloud_raw` | 驱动原始点云，包含 offset_time 等字段 |
 | `/odin1/imu` | IMU |
-| `/odin1/image` | bgr8 图像，sensor_msgs/msg/Image，供 RViz 和算法直接订阅 |
 | `/odin1/image/compressed` | 设备 JPEG 图像 |
 | `/odin1/odometry` | 设备里程计 |
 | `/odin1/odometry_highfreq` | 高频里程计 |
 | `/odin1/cloud_slam` | 设备 SLAM 点云 |
-| `/odin1/depth_img_competetion` | 深度补全图，sensor_msgs/msg/Image |
-| `/odin1/depth_img_competetion_cloud` | 深度补全点云，sensor_msgs/msg/PointCloud2 |
 | `/tf` | 位姿和坐标变换 |
-| `/tf_static` | 若有发布则记录；当前驱动外参在 `/tf` |
+| `/tf_static` | 标定得到的雷达到相机静态变换，新录制必须存在 |
 
 `cloud_raw` 是厂家驱动提供的数据，默认保留厂家置信度过滤阈值 35；并非保证无过滤的硬件数据。`calib.yaml` 保存设备标定。设备时间戳与主机接收时间不属于同一时间轴，离线算法应使用消息 header 时间和点内 offset_time，避免混用 bag 接收时间。
 
-每次新录制会保存 `recording_topics.json`；录后校验和严格回放验证按该次采集的清单检查，包括新增的两路深度补全输出。已有清单的旧 bag 继续按原清单校验；没有该文件的旧试录仍按 JPEG 图像清单检查，不要求 `/odin1/image` 或深度补全输出。
+每次新录制会保存 `recording_topics.json`；录前检查、录制和新采集的校验均使用上述精简清单。录后校验和严格回放验证按该次采集保存的清单检查。已有清单的旧 bag 继续按原清单校验；没有该文件的旧试录仍按 JPEG 图像清单检查，不要求 `/odin1/image` 或深度补全输出。
+
+### 相机坐标系与图像点云融合
+
+更新后通过 `start.sh` 启动时，启动器会将驱动的三路图像输出临时重映射至各自的 `.../driver` 话题，由 `camera_metadata.py` 补齐 header 后发布回原话题。图像内容、压缩格式和设备时间戳保持原值。该节点与驱动统一启动和退出，无需重新编译。已经运行的驱动需先结束录制，再停止并重新执行 `start.sh`，配置才会生效。录前检查会拒绝缺少相机坐标系或静态变换的数据流。
+
+原始 JPEG、解码图像和去畸变图像的 `header.frame_id` 为 `odin1_camera_optical_frame`（X 右、Y 下、Z 前）。名称由本工具统一指定，不是从图像像素推断得到。其轴向和外参来自设备 `calib.yaml` 与驱动的实际投影公式：
+
+```text
+p_camera = Tcl_0 @ p_lidar   # 齐次坐标，单位米
+odom → odin1_base_link → odin1_camera_optical_frame
+```
+
+原始点云的坐标系为 `odin1_base_link`。`Tcl_0` 将该坐标下的点变换至相机光学坐标；发布父坐标系为雷达、子坐标系为相机的 TF 时，使用其逆变换。标定旋转的小数舍入误差会在生成 TF 四元数时正交化，原始标定文件保持不变。`camera_frames.json` 记录原始矩阵、TF 矩阵及舍入修正量，新录制的校验也会检查图像坐标系和静态 TF 是否存在。
+
+原始 JPEG 使用 `cam_0.cam_model: FishPoly` 和 `k2` 至 `k7` 的厂家鱼眼投影模型，不能直接当作普通针孔或 OpenCV 的四参数 fisheye 模型。投影公式参见厂家 `include/polynomial_camera.hpp`。相机内参与畸变参数仍保存在每次采集的 `calib.yaml`，本工具没有发布不匹配的标准 CameraInfo。融合原始点云时还需按设备时间戳关联图像；运动时应结合点内 `offset_time` 和里程计补偿，坐标系补全不等于完成时间同步或去畸变。
+
+已录制的 JPEG-only bag 可生成独立补全副本：
+
+```bash
+source /mnt/d/workspace/odin_capture/env.sh
+python3 "$ODIN_TOOLS/complete_camera_bag.py" \
+  /root/odin_bags/20261029_101957 \
+  /mnt/d/workspace/odin_bags/20261029_101957_camera_frames
+```
+
+副本补齐图像 frame_id 并添加相机 `/tf_static`，保留原消息的接收时间、设备时间戳及图像字节，重新生成校验和 SHA-256。原采集目录保持原样；输出目录已存在时拒绝覆盖。回放该副本即带有相机静态变换。
 
 ## 图像回放和算法使用
 
@@ -130,19 +165,19 @@ source /mnt/d/workspace/odin_capture/env.sh
 ros2 service call /rosbag2_player/resume rosbag2_interfaces/srv/Resume '{}'
 ```
 
-`view.sh` 会自动启动 JPEG 解码器，所以旧 bag 也能在 RViz 的 Camera 面板看到图像。新 bag 已有 `/odin1/image` 时，解码器会停止额外发布，避免重复帧。关闭该 RViz 窗口时会一起停止它启动的解码器。
+`view.sh` 会自动启动 JPEG 解码器，将 `/odin1/image/compressed` 解码为 `/odin1/image`，供 RViz 的 Camera 面板显示。历史 bag 已有 `/odin1/image` 时，解码器会停止额外发布，避免重复帧。关闭该 RViz 窗口时会一起停止它启动的解码器。
 
-如使用现有 RViz 窗口，可通过 File → Open Config 加载 `D:\workspace\odin_capture\playback.rviz`，另开终端运行 `bash /mnt/d/workspace/odin_capture/image_bridge.sh` 为旧 bag 解码。
+如使用现有 RViz 窗口，可通过 File → Open Config 加载 `D:\workspace\odin_capture\playback.rviz`，另开终端运行 `bash /mnt/d/workspace/odin_capture/image_bridge.sh` 为只保存 JPEG 的 bag 解码。
 
 算法直接订阅 `/odin1/image`，类型 `sensor_msgs/msg/Image`，编码 `bgr8`；Python 可用 `CvBridge().imgmsg_to_cv2(msg, desired_encoding='bgr8')` 得到 OpenCV 图像。标定见该采集目录的 `calib.yaml`，使用 `msg.header.stamp` 做时间关联。这里的 bgr8 是设备 JPEG 解码后的图像，不是额外采集的无压缩传感器原始数据，也未经去畸变。
 
-不启动 RViz、只运行算法时，旧 bag 需要另开一个终端执行：
+不启动 RViz、算法需要订阅 `/odin1/image` 时，只保存 JPEG 的 bag 需要另开一个终端执行：
 
 ```bash
 bash /mnt/d/workspace/odin_capture/image_bridge.sh
 ```
 
-新 bag 回放时已有 Image 话题，可直接运行算法。也可以直接订阅 JPEG 话题，并用 `CvBridge().compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')` 解码，原有数据无需重新采集。
+历史 bag 如果已有 Image 话题，可直接运行算法。也可以直接订阅 JPEG 话题，并用 `CvBridge().compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')` 解码，原有数据无需重新采集。
 
 ## 4. 查看与回放
 
@@ -179,7 +214,7 @@ python3 /mnt/d/workspace/odin_capture/verify_replay.py /root/odin_bags/日期_�
 - `lsusb -d 2207:0019` 无输出：检查 Windows 的 `usbipd list`，重新执行 attach；换 USB 3 数据线/接口并检查电源。
 - 已枚举但无法打开：检查 udev 权限及是否有其他程序占用设备。当前 WSL 默认用户为 root。
 - 话题存在但无消息：查看驱动日志中的固件、USB、初始化、流启用错误；录制脚本会拒绝在关键数据流缺失时开始录制。
-- `validation.json` 的频率基于 bag 接收时间，用于吞吐检查；它不能证明设备端绝对无丢帧。时间戳倒退会使校验失败并保留原始数据。
+- `validation.json` 的频率基于 bag 接收时间，用于吞吐检查；它不能证明设备端绝对无丢帧。传感器时间戳倒退仍会使校验失败并保留原始数据。仅主机接收时间倒退时按上述流程生成修正副本；校验通过也不能证明驱动队列没有丢弃过数据。
 - WSL USB 转接的稳定性需要以实际运行结果为准；持续发生 USB 断连时先处理连接与供电，再考虑原生 Ubuntu。
 
 重新编译：`bash /mnt/d/workspace/odin_capture/build.sh`。所有终端使用 `env.sh` 保持相同 ROS_DOMAIN_ID（默认 71）及中间件配置。

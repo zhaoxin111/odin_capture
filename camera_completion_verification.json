@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "original_messages_preserved": 3308,
+  "images_frame_completed": 41,
+  "jpeg_bytes_and_sensor_stamps_unchanged": true,
+  "non_image_messages_byte_identical": true,
+  "receive_times_and_order_unchanged": true,
+  "added_static_tf_messages": 1,
+  "tf_lookup_matches_calibration_within": 1e-05,
+  "sha256_files_checked": 14
+}

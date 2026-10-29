@@ -10,33 +10,36 @@ import shutil
 import signal
 import subprocess
 import time
-
-DEPTH_TOPICS = {
-    '/odin1/depth_img_competetion': 'sensor_msgs/msg/Image',
-    '/odin1/depth_img_competetion_cloud': 'sensor_msgs/msg/PointCloud2',
-}
+from calibration import validate_calibration
+from bag_timing import receive_time_plan, repair_session
+from camera_frames import CAMERA_FRAME, LIDAR_FRAME, camera_geometry
 
 TOPICS = {
     '/odin1/cloud_raw': 'sensor_msgs/msg/PointCloud2',
     '/odin1/imu': 'sensor_msgs/msg/Imu',
-    '/odin1/image': 'sensor_msgs/msg/Image',
     '/odin1/image/compressed': 'sensor_msgs/msg/CompressedImage',
     '/odin1/odometry': 'nav_msgs/msg/Odometry',
     '/odin1/odometry_highfreq': 'nav_msgs/msg/Odometry',
     '/odin1/cloud_slam': 'sensor_msgs/msg/PointCloud2',
-    **DEPTH_TOPICS,
     '/tf': 'tf2_msgs/msg/TFMessage',
     '/tf_static': 'tf2_msgs/msg/TFMessage',
 }
-REQUIRED = set(TOPICS) - {'/tf_static'}  # This driver publishes extrinsics on /tf.
+REQUIRED = set(TOPICS) - {'/tf_static'}  # Camera static TF is checked separately below.
+
+
+def topics_for_session(session):
+    manifest = Path(session) / 'recording_topics.json'
+    if manifest.exists():
+        return json.loads(manifest.read_text())
+    # Sessions without a manifest recorded JPEG only and no depth completion.
+    return dict(TOPICS)
 
 
 def required_for_session(session):
-    manifest = Path(session) / 'recording_topics.json'
-    if manifest.exists():
-        return set(json.loads(manifest.read_text())) - {'/tf_static'}
-    # Sessions without a manifest recorded JPEG only and no depth completion.
-    return REQUIRED - {'/odin1/image'} - set(DEPTH_TOPICS)
+    required = set(topics_for_session(session)) - {'/tf_static'}
+    if (Path(session) / 'camera_frames.json').exists():
+        required.add('/tf_static')
+    return required
 
 
 def check(session):
@@ -53,6 +56,8 @@ def check(session):
     first, last, stamps, backwards = {}, {}, {}, collections.Counter()
     empty_payloads = collections.Counter()
     samples = {}
+    camera_frames = set()
+    static_edges = set()
     while reader.has_next():
         topic, data, received = reader.read_next()
         msg = deserialize_message(data, types[topic])
@@ -62,6 +67,10 @@ def check(session):
         first.setdefault(topic, received)
         last[topic] = received
         header = getattr(msg, 'header', None)
+        if topic == '/odin1/image/compressed':
+            camera_frames.add(msg.header.frame_id)
+        if topic == '/tf_static':
+            static_edges.update((t.header.frame_id, t.child_frame_id) for t in msg.transforms)
         if header is not None:
             stamp = header.stamp.sec * 10**9 + header.stamp.nanosec
             if stamp < stamps.get(topic, stamp):
@@ -85,9 +94,20 @@ def check(session):
                 samples[topic]['transforms'] = [
                     [t.header.frame_id, t.child_frame_id] for t in msg.transforms]
     missing = [t for t in sorted(required_for_session(bag.parent)) if not counts[t]]
-    report = {'passed': not missing and not backwards and not empty_payloads,
+    receive_timing = receive_time_plan(bag)
+    camera_errors = []
+    if (bag.parent / 'camera_frames.json').exists():
+        if camera_frames != {CAMERA_FRAME}:
+            camera_errors.append('压缩图像的相机坐标系缺失或不一致')
+        if (LIDAR_FRAME, CAMERA_FRAME) not in static_edges:
+            camera_errors.append('缺少雷达到相机的静态 TF')
+    report = {'passed': not missing and not backwards and not empty_payloads
+                       and not receive_timing['receive_time_rollbacks'] and not camera_errors,
+              'camera_frame_errors': camera_errors,
               'missing': missing, 'empty_payloads': dict(empty_payloads),
-              'backwards_header_stamps': dict(backwards), 'topics': {}}
+              'backwards_header_stamps': dict(backwards),
+              'receive_time_rollbacks': receive_timing['receive_time_rollbacks'],
+              'topics': {}}
     for t, n in counts.items():
         duration = (last[t] - first[t]) / 1e9
         report['topics'][t] = {'messages': n, 'duration_seconds': duration,
@@ -106,13 +126,23 @@ def probe(seconds=5):
     node = rclpy.create_node('odin_capture_preflight')
     counts = collections.Counter()
     subscriptions = []
+    camera_frames = set()
+    static_edges = set()
+
+    def observe(msg, topic):
+        counts.update([topic])
+        if topic == '/odin1/image/compressed':
+            camera_frames.add(msg.header.frame_id)
+        if topic == '/tf_static':
+            static_edges.update((t.header.frame_id, t.child_frame_id) for t in msg.transforms)
+
     for topic, typename in TOPICS.items():
         qos = QoSProfile(depth=100, reliability=ReliabilityPolicy.RELIABLE,
                          durability=(DurabilityPolicy.TRANSIENT_LOCAL if topic == '/tf_static'
                                      else DurabilityPolicy.VOLATILE))
         subscriptions.append(node.create_subscription(
             get_message(typename), topic,
-            lambda msg, t=topic: counts.update([t]), qos))
+            lambda msg, t=topic: observe(msg, t), qos))
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline:
         rclpy.spin_once(node, timeout_sec=0.1)
@@ -123,6 +153,8 @@ def probe(seconds=5):
     missing = [t for t in sorted(REQUIRED) if not counts[t]]
     if missing:
         raise RuntimeError('话题无数据，拒绝开始录制: ' + ', '.join(missing))
+    if camera_frames != {CAMERA_FRAME} or (LIDAR_FRAME, CAMERA_FRAME) not in static_edges:
+        raise RuntimeError('相机 frame_id 或静态 TF 未补全；请先结束当前录制，再用更新后的 start.sh 重启驱动')
     return {'probe_seconds': seconds, 'messages': dict(counts), 'discovery': discovery}
 
 
@@ -134,13 +166,32 @@ def sha256(path):
     return h.hexdigest()
 
 
+def write_hashes(session):
+    manifest = {str(p.relative_to(session)): sha256(p)
+                for p in sorted(session.rglob('*'))
+                if p.is_file() and p != session / 'sha256.json'}
+    (session / 'sha256.json').write_text(json.dumps(manifest, indent=2))
+    return manifest
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--seconds', type=int, default=60, help='0 表示录制到 Ctrl+C')
     parser.add_argument('--check', type=Path)
     parser.add_argument('--probe', action='store_true')
     parser.add_argument('--no-copy', action='store_true')
+    parser.add_argument('--recover', type=Path, help='保留原采集目录并生成接收时间修正副本')
+    parser.add_argument('--recovery-output', type=Path, help='修正副本目录，默认在 Windows odin_bags 下')
     args = parser.parse_args()
+    if args.recover:
+        destination = args.recovery_output or (Path('/mnt/d/workspace/odin_bags') /
+                                               (args.recover.resolve().name + '_repaired'))
+        repaired = repair_session(args.recover, destination)
+        if not check(repaired):
+            raise RuntimeError(f'修正副本仍未通过校验，已保留: {repaired}')
+        write_hashes(repaired)
+        print('修正副本校验通过:', repaired, flush=True)
+        return 0
     if args.check:
         return 0 if check(args.check) else 1
     if args.seconds < 0:
@@ -160,8 +211,8 @@ def main():
     (session / 'recording_topics.json').write_text(json.dumps(TOPICS, indent=2))
     shutil.copy2(tools / 'capture.yaml', session / 'capture.yaml')
     calib = Path(os.environ['ODIN_CALIB_DIR']) / 'calib.yaml'
-    if not calib.exists():
-        raise RuntimeError('设备标定文件不存在，拒绝录制')
+    validate_calibration(calib)
+    (session / 'camera_frames.json').write_text(json.dumps(camera_geometry(calib), indent=2))
     shutil.copy2(calib, session / 'calib.yaml')
     repo = ws / 'src/odin_ros_driver'
     (session / 'driver_commit.txt').write_text(subprocess.check_output(
@@ -199,14 +250,16 @@ def main():
                 raise RuntimeError('录制器尚未完成关闭，保留原始目录，暂不复制')
     if proc.returncode not in (0, 130, -signal.SIGINT):
         raise RuntimeError(f'录制器退出码 {proc.returncode}，请检查 {session}/recorder.log')
+    timing = receive_time_plan(session / 'bag')
+    if timing['receive_time_rollbacks']:
+        print('检测到主机接收时间倒退；保留原始采集并尝试生成修正副本。', flush=True)
+        session = repair_session(session, session.with_name(session.name + '_repaired'))
     if not check(session):
         raise RuntimeError(f'bag 校验未通过，数据保留在 {session}')
     logs = sorted((ws / 'logs').glob('driver_*.log'))
     if logs:
         shutil.copy2(logs[-1], session / 'driver.log')
-    manifest = {str(p.relative_to(session)): sha256(p)
-                for p in sorted(session.rglob('*')) if p.is_file()}
-    (session / 'sha256.json').write_text(json.dumps(manifest, indent=2))
+    manifest = write_hashes(session)
     if not args.no_copy:
         destination = Path('/mnt/d/workspace/odin_bags') / session.name
         size = sum(p.stat().st_size for p in session.rglob('*') if p.is_file())

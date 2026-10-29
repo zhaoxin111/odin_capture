@@ -1,0 +1,183 @@
+{
+  "errors": [],
+  "topics": {
+    "/odin1/imu": {
+      "messages": 1562,
+      "frames": [
+        "imu_link"
+      ],
+      "sensor_interval_ms": {
+        "min": 2.405375,
+        "median": 2.522917,
+        "max": 2.643084
+      },
+      "sensor_hz": 396.33544801898944,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 0
+    },
+    "/odin1/odometry_highfreq": {
+      "messages": 1545,
+      "frames": [
+        "odom"
+      ],
+      "sensor_interval_ms": {
+        "min": 2.405375,
+        "median": 2.522917,
+        "max": 2.643084
+      },
+      "sensor_hz": 396.3432357567886,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 0,
+      "position_min_max": [
+        [
+          -0.001898,
+          0.002253,
+          0.000693
+        ],
+        [
+          -0.001487,
+          0.002752,
+          0.001071
+        ]
+      ],
+      "quaternion_norm_min_max": [
+        0.9999988975883923,
+        0.9999999944205
+      ]
+    },
+    "/odin1/image/compressed": {
+      "messages": 41,
+      "frames": [
+        ""
+      ],
+      "sensor_interval_ms": {
+        "min": 97.419635,
+        "median": 97.47396850000001,
+        "max": 97.526176
+      },
+      "sensor_hz": 10.259185781792786,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 0
+    },
+    "/odin1/cloud_raw": {
+      "messages": 40,
+      "frames": [
+        "odin1_base_link"
+      ],
+      "sensor_interval_ms": {
+        "min": 97.419635,
+        "median": 97.474135,
+        "max": 97.526176
+      },
+      "sensor_hz": 10.259177382508533,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 0,
+      "points_min_max": [
+        49152,
+        49152
+      ],
+      "finite_xyz_ratio_min": 1.0
+    },
+    "/odin1/odometry": {
+      "messages": 40,
+      "frames": [
+        "odom"
+      ],
+      "sensor_interval_ms": {
+        "min": 97.419635,
+        "median": 97.474135,
+        "max": 97.526176
+      },
+      "sensor_hz": 10.259177382508533,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 0,
+      "position_min_max": [
+        [
+          -0.001677,
+          0.002559,
+          0.000877
+        ],
+        [
+          -0.001611,
+          0.002682,
+          0.000951
+        ]
+      ],
+      "quaternion_norm_min_max": [
+        0.9999989838824839,
+        0.9999999533014989
+      ]
+    },
+    "/tf": {
+      "messages": 40,
+      "frames": []
+    },
+    "/odin1/cloud_slam": {
+      "messages": 40,
+      "frames": [
+        "odom"
+      ],
+      "sensor_interval_ms": {
+        "min": 97.419635,
+        "median": 97.474135,
+        "max": 97.526176
+      },
+      "sensor_hz": 10.259177382508533,
+      "backwards": 0,
+      "duplicate_stamps": 0,
+      "gaps_over_2x_median": 0,
+      "points_min_max": [
+        21695,
+        21771
+      ],
+      "finite_xyz_ratio_min": 1.0
+    }
+  },
+  "hash_checks": {
+    "/root/odin_bags/20261029_101957": {
+      "files": 12,
+      "mismatches": []
+    },
+    "/mnt/d/workspace/odin_bags/20261029_101957": {
+      "files": 12,
+      "mismatches": []
+    }
+  },
+  "calibration_valid": true,
+  "timing": {
+    "receive_time_rollbacks": [],
+    "total_adjustment_ns": 0,
+    "segments": [
+      [
+        "bag_0.db3",
+        1,
+        null,
+        0
+      ]
+    ]
+  },
+  "sqlite_integrity": "ok",
+  "recording_manifest_matches_current": true,
+  "excluded_topics_absent": true,
+  "message_count": 3308,
+  "duration_seconds": 3.938291091,
+  "decoded_images": {
+    "(1296, 1600, 3)": 41
+  },
+  "tf_edges": [
+    [
+      "odom",
+      "odin1_base_link"
+    ]
+  ],
+  "imu_acceleration_norm_min_max": [
+    9.86004738646999,
+    10.003430031309197
+  ],
+  "passed": true
+}
